@@ -1,0 +1,30 @@
+{
+  "name": "project-almacen",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:api": "turbo dev --filter=api",
+    "dev:client": "turbo dev --filter=client",
+    "dev:full": "pnpm db:up && pnpm dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down",
+    "db:logs": "docker-compose logs -f postgres",
+    "db:pgadmin": "docker-compose logs -f pgadmin",
+    "db:restart": "docker-compose restart",
+    "db:reset": "docker-compose down -v && docker-compose up -d",
+    "db:ps": "docker-compose ps"
+  },
+  "devDependencies": {
+    "prettier": "^3.7.4",
+    "turbo": "^2.9.12",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
+  }
+}
