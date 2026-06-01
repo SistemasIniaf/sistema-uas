@@ -3,12 +3,7 @@ import { persist } from "zustand/middleware"
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
-export type Rol =
-  | "administrador"
-  | "responsable_almacen"
-  | "solicitador"
-  | "aprobador"
-  | "auditor"
+export type Rol = "administrador" | "responsable" | "operador" | "auditor"
 
 export interface AuthUsuario {
   id: number
@@ -18,7 +13,6 @@ export interface AuthUsuario {
   unidad: {
     id: number
     nombre: string
-    sigla: string
   } | null
 }
 
@@ -49,8 +43,7 @@ export const useAuthStore = create<AuthState>()(
       setUser: (user) => set({ user }),
     }),
     {
-      name: "auth-storage", // clave en localStorage
-      // Solo persiste token y user, no las funciones
+      name: "auth-storage",
       partialize: (state) => ({
         token: state.token,
         user: state.user,
@@ -61,7 +54,6 @@ export const useAuthStore = create<AuthState>()(
 )
 
 // ── Selectores ────────────────────────────────────────────────────────────────
-// Evitan re-renders innecesarios al suscribirse solo al campo que necesitas
 
 export const useToken = () => useAuthStore((s) => s.token)
 export const useUser = () => useAuthStore((s) => s.user)

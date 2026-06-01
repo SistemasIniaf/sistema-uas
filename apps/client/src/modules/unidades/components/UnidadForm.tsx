@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 import { Button } from "@/components/ui/button"
 import { FormInput } from "@/components/form/FormInput"
+import { FormTextarea } from "@/components/form/FormTextarea"
 import { FormCheckbox } from "@/components/form/FormCheckbox"
 import { FieldGroup } from "@/components/ui/field"
 import { DialogClose, DialogFooter } from "@/components/ui/dialog"
@@ -36,29 +37,34 @@ export function UnidadForm({ unidad, onClose }: UnidadFormProps) {
     resolver: zodResolver(unidadSchema),
     defaultValues: {
       nombre: "",
-      sigla: "",
+      descripcion: "",
       activo: true,
     },
   })
 
-  // Cuando se abre en modo edición, rellena el formulario con los datos actuales
   useEffect(() => {
     if (unidad) {
       reset({
         nombre: unidad.nombre,
-        sigla: unidad.sigla,
+        descripcion: unidad.descripcion ?? "",
         activo: unidad.activo,
       })
     } else {
-      reset({ nombre: "", sigla: "", activo: true })
+      reset({ nombre: "", descripcion: "", activo: true })
     }
   }, [unidad, reset])
 
   function onSubmit(data: UnidadFormInput) {
+    const payload = {
+      nombre: data.nombre,
+      descripcion: data.descripcion || undefined,
+      activo: data.activo,
+    }
+
     if (isEditing) {
-      update({ id: unidad.id, payload: data })
+      update({ id: unidad.id, payload })
     } else {
-      create(data)
+      create(payload)
     }
   }
 
@@ -77,12 +83,14 @@ export function UnidadForm({ unidad, onClose }: UnidadFormProps) {
           control={control}
           disabled={isPending}
         />
-        <FormInput
-          name="sigla"
-          label="Sigla"
-          placeholder="Ej: DSI"
+        <FormTextarea
+          name="descripcion"
+          label="Descripción"
+          placeholder="Descripción opcional de la unidad..."
           control={control}
           disabled={isPending}
+          required={false}
+          rows={3}
         />
         {isEditing && (
           <FormCheckbox

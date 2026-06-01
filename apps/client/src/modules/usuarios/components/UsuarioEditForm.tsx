@@ -35,20 +35,16 @@ export function UsuarioEditForm({ usuario, onClose }: Props) {
 
   const unidadOptions = unidades.map((u) => ({
     value: String(u.id),
-    label: `${u.sigla} — ${u.nombre}`,
+    label: u.nombre,
   }))
 
   const form = useForm<UpdateUsuarioFormInput>({
     resolver: zodResolver(updateUsuarioSchema),
-    // Los defaultValues iniciales ya cargan los datos del usuario.
-    // Esto funciona incluso antes de que el primer render termine,
-    // sin necesitar ningún useEffect.
     defaultValues: {
       nombre: usuario.nombre,
       usuario: usuario.usuario,
       password: "",
       rol: usuario.rol,
-      // Select trabaja con strings; Number() convierte al hacer submit
       unidadId:
         usuario.unidadId != null
           ? (String(usuario.unidadId) as unknown as number)
@@ -57,13 +53,6 @@ export function UsuarioEditForm({ usuario, onClose }: Props) {
     },
   })
 
-  // Este efecto solo sirve para el caso en que las unidades aún estaban
-  // cargando cuando el componente montó (primera apertura sin caché).
-  // Una vez que terminan de cargar, forzamos un reset para que el Select
-  // encuentre su opción y muestre el label correcto.
-  // El array vacío garantiza que corra exactamente una vez al montar,
-  // capturando el valor de isLoadingUnidades en el closure.
-  // Si isLoadingUnidades ya era false al montar, el reset es instantáneo.
   useEffect(() => {
     if (isLoadingUnidades) return
     form.reset({
@@ -79,10 +68,6 @@ export function UsuarioEditForm({ usuario, onClose }: Props) {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingUnidades])
-  // Solo [isLoadingUnidades]: cuando pase de true→false se dispara el reset.
-  // Si ya era false al montar, corre en el primer render y autocompleta.
-  // No añadimos usuario/form porque este componente se desmonta y remonta
-  // con cada apertura del dialog (ver UsuarioDialog).
 
   const rolActual = form.watch("rol")
   const esAdministrador = rolActual === "administrador"

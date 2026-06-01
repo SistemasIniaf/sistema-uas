@@ -3,7 +3,7 @@
 export interface Unidad {
   id: number
   nombre: string
-  sigla: string
+  descripcion: string | null
   activo: boolean
   _count: { usuarios: number }
 }
@@ -45,7 +45,7 @@ export interface UnidadesQueryParams {
 
 export interface CreateUnidadPayload {
   nombre: string
-  sigla: string
+  descripcion?: string
   activo?: boolean
 }
 

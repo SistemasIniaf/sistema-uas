@@ -13,7 +13,7 @@ import { paginate } from 'src/common/helpers/paginate.helper';
 const listSelect = {
   id: true,
   nombre: true,
-  sigla: true,
+  descripcion: true,
   activo: true,
   _count: { select: { usuarios: true } },
 } as const;
@@ -24,19 +24,20 @@ export class UnidadesService {
 
   async create(dto: CreateUnidadDto) {
     const existe = await this.prisma.unidad.findUnique({
-      where: { sigla: dto.sigla.toUpperCase() },
+      where: { nombre: dto.nombre.toUpperCase() },
     });
 
     if (existe) {
       throw new BadRequestException(
-        `Ya existe una unidad con la sigla "${dto.sigla.toUpperCase()}"`,
+        `Ya existe una unidad con el nombre "${dto.nombre}"`,
       );
     }
 
     return this.prisma.unidad.create({
       data: {
-        ...dto,
-        sigla: dto.sigla.toUpperCase(),
+        nombre: dto.nombre,
+        descripcion: dto.descripcion ?? null,
+        activo: dto.activo ?? true,
       },
     });
   }
@@ -51,7 +52,12 @@ export class UnidadesService {
         ? {
             OR: [
               { nombre: { contains: search, mode: 'insensitive' as const } },
-              { sigla: { contains: search, mode: 'insensitive' as const } },
+              {
+                descripcion: {
+                  contains: search,
+                  mode: 'insensitive' as const,
+                },
+              },
             ],
           }
         : {}),
@@ -78,7 +84,7 @@ export class UnidadesService {
       select: {
         id: true,
         nombre: true,
-        sigla: true,
+        descripcion: true,
         activo: true,
       },
     });
@@ -110,19 +116,16 @@ export class UnidadesService {
   async update(id: number, dto: UpdateUnidadDto) {
     await this.findOne(id); // valida existencia
 
-    if (dto.sigla) {
-      const siglaUpper = dto.sigla.toUpperCase();
+    if (dto.nombre) {
       const duplicado = await this.prisma.unidad.findFirst({
-        where: { sigla: siglaUpper, NOT: { id } },
+        where: { nombre: dto.nombre, NOT: { id } },
       });
 
       if (duplicado) {
         throw new BadRequestException(
-          `Ya existe otra unidad con la sigla "${siglaUpper}"`,
+          `Ya existe otra unidad con el nombre "${dto.nombre}"`,
         );
       }
-
-      dto.sigla = siglaUpper;
     }
 
     return this.prisma.unidad.update({
@@ -137,7 +140,7 @@ export class UnidadesService {
     return this.prisma.unidad.update({
       where: { id },
       data: { activo: !unidad.activo },
-      select: { id: true, nombre: true, sigla: true, activo: true },
+      select: { id: true, nombre: true, descripcion: true, activo: true },
     });
   }
 

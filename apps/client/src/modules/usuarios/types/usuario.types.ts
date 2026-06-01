@@ -2,9 +2,8 @@
 
 export const ROL_ENUM = [
   "administrador",
-  "responsable_almacen",
-  "solicitador",
-  "aprobador",
+  "responsable",
+  "operador",
   "auditor",
 ] as const
 
@@ -12,9 +11,8 @@ export type Rol = (typeof ROL_ENUM)[number]
 
 export const ROL_LABELS: Record<Rol, string> = {
   administrador: "Administrador",
-  responsable_almacen: "Responsable de Almacén",
-  solicitador: "Solicitador",
-  aprobador: "Aprobador",
+  responsable: "Responsable",
+  operador: "Operador",
   auditor: "Auditor",
 }
 
@@ -23,7 +21,6 @@ export const ROL_LABELS: Record<Rol, string> = {
 export interface UnidadResumen {
   id: number
   nombre: string
-  sigla: string
 }
 
 export interface Usuario {

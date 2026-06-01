@@ -28,7 +28,7 @@ const safeSelect = {
   createdAt: true,
   updatedAt: true,
   unidad: {
-    select: { id: true, nombre: true, sigla: true },
+    select: { id: true, nombre: true },
   },
 };
 
@@ -145,7 +145,7 @@ export class UsuariosService {
         usuario: true,
         rol: true,
         activo: true,
-        unidad: { select: { id: true, nombre: true, sigla: true } },
+        unidad: { select: { id: true, nombre: true } },
       },
     });
   }
@@ -170,7 +170,6 @@ export class UsuariosService {
       await this.verificarUsuarioUnico(dto.usuario, id);
     }
 
-    // Determinar el rol final para validar unidad
     const rolFinal = (dto.rol ?? actual.rol) as Rol;
     const unidadFinal =
       dto.unidadId !== undefined
@@ -184,7 +183,6 @@ export class UsuariosService {
       data.password = await bcrypt.hash(dto.password, SALT_ROUNDS);
     }
 
-    // Si se cambia a administrador, limpiar unidad
     if (rolFinal === Rol.ADMINISTRADOR) {
       data.unidadId = null;
     }
@@ -233,7 +231,7 @@ export class UsuariosService {
   }
 
   async remove(id: number) {
-    await this.findOne(id); // valida existencia
+    await this.findOne(id);
 
     return this.prisma.usuario.delete({
       where: { id },

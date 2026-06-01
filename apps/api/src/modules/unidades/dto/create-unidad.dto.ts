@@ -12,9 +12,11 @@ export class CreateUnidadDto {
   nombre!: string;
 
   @IsString()
-  @MinLength(2, { message: 'La sigla debe tener al menos 2 caracteres' })
-  @MaxLength(10, { message: 'La sigla no puede tener más de 10 caracteres' })
-  sigla!: string;
+  @IsOptional()
+  @MaxLength(500, {
+    message: 'La descripción no puede tener más de 500 caracteres',
+  })
+  descripcion?: string;
 
   @IsBoolean()
   @IsOptional()

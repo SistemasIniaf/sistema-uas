@@ -47,11 +47,9 @@ import type { Usuario, Rol } from "../types/usuario.types"
 const ROL_BADGE_CLASS: Record<Rol, string> = {
   administrador:
     "border-purple-500/30 bg-purple-500/10 text-purple-600 dark:text-purple-400",
-  responsable_almacen:
+  responsable:
     "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  solicitador:
-    "border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  aprobador:
+  operador:
     "border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400",
   auditor:
     "border-yellow-500/30 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
@@ -96,14 +94,7 @@ const columns: ColumnDef<Usuario>[] = [
       if (!unidad) {
         return <span className="text-xs text-muted-foreground">—</span>
       }
-      return (
-        <span className="text-sm">
-          <span className="mr-2 font-mono text-xs text-muted-foreground">
-            {unidad.sigla}
-          </span>
-          {unidad.nombre}
-        </span>
-      )
+      return <span className="text-sm">{unidad.nombre}</span>
     },
   },
   {
@@ -182,7 +173,6 @@ export function UsuariosTable() {
   const currentPage = pagination.pageIndex + 1
   const lastPage = meta?.lastPage ?? 1
 
-  // ── Paginación con ellipsis ──────────────────────────────────────────────
   function getPageNumbers(): (number | "ellipsis")[] {
     if (lastPage <= 5) {
       return Array.from({ length: lastPage }, (_, i) => i + 1)
@@ -280,7 +270,6 @@ export function UsuariosTable() {
           </SelectContent>
         </Select>
 
-        {/* Indicador de carga */}
         {isFetching && !isLoading && (
           <span className="ml-auto animate-pulse text-xs text-muted-foreground">
             Actualizando...

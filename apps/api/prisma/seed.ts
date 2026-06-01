@@ -10,7 +10,7 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const hash = await bcrypt.hash('Admin_2620*', 10);
+  const hash = await bcrypt.hash('Iniaf2026*', 10);
 
   await prisma.usuario.upsert({
     where: { usuario: 'admin' },

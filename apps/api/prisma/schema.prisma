@@ -15,18 +15,17 @@ datasource db {
 
 enum Rol {
   administrador
-  responsable_almacen
-  solicitador
-  aprobador
+  responsable
+  operador
   auditor
 }
 
 model Unidad {
-  id       Int       @id @default(autoincrement())
-  nombre   String
-  sigla    String    @unique
-  activo   Boolean   @default(true)
-  usuarios Usuario[]
+  id          Int       @id @default(autoincrement())
+  nombre      String    @unique
+  descripcion String?
+  activo      Boolean   @default(true)
+  usuarios    Usuario[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

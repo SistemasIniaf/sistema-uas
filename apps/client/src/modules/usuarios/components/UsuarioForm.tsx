@@ -31,7 +31,7 @@ export function UsuarioCreateForm({ onClose }: Props) {
 
   const unidadOptions = unidades.map((u) => ({
     value: String(u.id),
-    label: `${u.sigla} — ${u.nombre}`,
+    label: u.nombre,
   }))
 
   const form = useForm<CreateUsuarioFormInput>({

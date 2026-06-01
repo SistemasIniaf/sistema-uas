@@ -1,7 +1,6 @@
 export enum Rol {
   ADMINISTRADOR = 'administrador',
-  RESPONSABLE_ALMACEN = 'responsable_almacen',
-  SOLICITADOR = 'solicitador',
-  APROBADOR = 'aprobador',
+  RESPONSABLE = 'responsable',
+  OPERADOR = 'operador',
   AUDITOR = 'auditor',
 }

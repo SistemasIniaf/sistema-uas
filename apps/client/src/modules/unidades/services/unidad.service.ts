@@ -51,7 +51,7 @@ export const unidadService = {
 
   toggleActivo: async (
     id: number
-  ): Promise<Pick<Unidad, "id" | "nombre" | "sigla" | "activo">> => {
+  ): Promise<Pick<Unidad, "id" | "nombre" | "activo">> => {
     const { data } = await api.patch(`/unidades/${id}/toggle`)
     return data
   },

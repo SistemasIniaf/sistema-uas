@@ -17,7 +17,7 @@ export class AuthService {
   async login(dto: LoginDto) {
     const usuario = await this.prisma.usuario.findUnique({
       where: { usuario: dto.usuario },
-      include: { unidad: { select: { id: true, nombre: true, sigla: true } } },
+      include: { unidad: { select: { id: true, nombre: true } } },
     });
 
     if (!usuario) {
@@ -64,7 +64,7 @@ export class AuthService {
         usuario: true,
         rol: true,
         activo: true,
-        unidad: { select: { id: true, nombre: true, sigla: true } },
+        unidad: { select: { id: true, nombre: true } },
       },
     });
     return usuario;

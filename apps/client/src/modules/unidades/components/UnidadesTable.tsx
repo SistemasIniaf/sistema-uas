@@ -52,13 +52,18 @@ const columns: ColumnDef<Unidad>[] = [
     ),
   },
   {
-    accessorKey: "sigla",
-    header: "Sigla",
-    cell: ({ row }) => (
-      <span className="font-mono text-xs tracking-wider">
-        {row.getValue("sigla")}
-      </span>
-    ),
+    accessorKey: "descripcion",
+    header: "Descripción",
+    cell: ({ row }) => {
+      const desc = row.getValue("descripcion") as string | null
+      return desc ? (
+        <span className="max-w-xs truncate text-sm text-muted-foreground">
+          {desc}
+        </span>
+      ) : (
+        <span className="text-xs text-muted-foreground/50">—</span>
+      )
+    },
   },
   {
     accessorKey: "activo",
@@ -105,14 +110,12 @@ export function UnidadesTable() {
   const [searchInput, setSearchInput] = useState("")
   const [soloActivos, setSoloActivos] = useState<boolean | undefined>(undefined)
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0, // TanStack es base-0
+    pageIndex: 0,
     pageSize: 10,
   })
 
-  // Debounce para no disparar una petición por cada tecla
   const search = useDebounce(searchInput, 400)
 
-  // Resetear a la primera página al cambiar filtros
   const resetPage = useCallback(
     () => setPagination((p) => ({ ...p, pageIndex: 0 })),
     []
@@ -120,7 +123,7 @@ export function UnidadesTable() {
 
   // ── Query ─────────────────────────────────────────────────────────────────
   const { data, isLoading, isFetching } = useUnidades({
-    page: pagination.pageIndex + 1, // API es base-1
+    page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     search: search || undefined,
     soloActivos,
@@ -134,7 +137,6 @@ export function UnidadesTable() {
     state: { pagination },
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    // Paginación manual: el servidor hace el trabajo
     manualPagination: true,
     manualFiltering: true,
   })
@@ -142,7 +144,6 @@ export function UnidadesTable() {
   const meta = data?.meta
   const isEmpty = !isLoading && table.getRowModel().rows.length === 0
 
-  // ── Helpers de paginación ────────────────────────────────────────────────
   const currentPage = pagination.pageIndex + 1
   const lastPage = meta?.lastPage ?? 1
 
@@ -173,7 +174,7 @@ export function UnidadesTable() {
         <div className="relative max-w-sm min-w-48 flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Buscar por nombre o sigla..."
+            placeholder="Buscar por nombre o descripción..."
             value={searchInput}
             onChange={(e) => {
               setSearchInput(e.target.value)
@@ -219,7 +220,6 @@ export function UnidadesTable() {
           </SelectContent>
         </Select>
 
-        {/* Indicador de carga mientras refetch */}
         {isFetching && !isLoading && (
           <span className="ml-auto animate-pulse text-xs text-muted-foreground">
             Actualizando...
@@ -249,7 +249,6 @@ export function UnidadesTable() {
 
           <TableBody>
             {isLoading ? (
-              // Skeleton mientras carga la primera vez
               Array.from({ length: pagination.pageSize }).map((_, i) => (
                 <TableRow key={i}>
                   {columns.map((_, j) => (
@@ -291,10 +290,9 @@ export function UnidadesTable() {
         </Table>
       </div>
 
-      {/* Footer: total + page size + paginación */}
+      {/* Footer */}
       {meta && (
         <div className="flex flex-wrap items-center justify-between gap-4">
-          {/* Total y rango */}
           <p className="shrink-0 text-sm text-muted-foreground">
             {meta.total === 0
               ? "Sin resultados"
@@ -304,7 +302,6 @@ export function UnidadesTable() {
                 )} de ${meta.total} unidade${meta.total !== 1 ? "s" : ""}`}
           </p>
 
-          {/* Rows per page */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Por página</span>
             <Select
@@ -326,7 +323,6 @@ export function UnidadesTable() {
             </Select>
           </div>
 
-          {/* Paginación con el componente shadcn */}
           {lastPage > 1 && (
             <Pagination className="mx-0 w-auto">
               <PaginationContent>

@@ -1,11 +1,11 @@
 -- CreateEnum
-CREATE TYPE "Rol" AS ENUM ('administrador', 'responsable_almacen', 'solicitador', 'aprobador', 'auditor');
+CREATE TYPE "Rol" AS ENUM ('administrador', 'responsable', 'operador', 'auditor');
 
 -- CreateTable
 CREATE TABLE "unidad" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
-    "sigla" TEXT NOT NULL,
+    "descripcion" TEXT,
     "activo" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE "usuario" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "unidad_sigla_key" ON "unidad"("sigla");
+CREATE UNIQUE INDEX "unidad_nombre_key" ON "unidad"("nombre");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "usuario_usuario_key" ON "usuario"("usuario");

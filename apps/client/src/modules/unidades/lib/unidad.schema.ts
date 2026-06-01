@@ -5,13 +5,13 @@ export const unidadSchema = z.object({
     .string()
     .min(1, "El nombre es requerido")
     .min(3, "El nombre debe tener al menos 3 caracteres")
-    .max(100, "El nombre no puede superar los 100 caracteres"),
+    .max(150, "El nombre no puede superar los 150 caracteres"),
 
-  sigla: z
+  descripcion: z
     .string()
-    .min(1, "La sigla es requerida")
-    .min(2, "La sigla debe tener al menos 2 caracteres")
-    .max(10, "La sigla no puede superar los 10 caracteres"),
+    .max(500, "La descripción no puede superar los 500 caracteres")
+    .optional()
+    .or(z.literal("")),
 
   activo: z.boolean().default(true),
 })
