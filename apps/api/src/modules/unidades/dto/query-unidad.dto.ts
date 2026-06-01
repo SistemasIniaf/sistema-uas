@@ -1,10 +1,12 @@
-import { IsBoolean, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { transformBoolean } from 'src/common/helpers/transform-boolean.helper';
 
 export class QueryUnidadDto extends PaginationDto {
   @IsOptional()
-  @Transform(({ value }) => value === 'true' || value === true)
-  @IsBoolean()
+  @Transform(({ obj }: { obj: Record<string, unknown> }) =>
+    transformBoolean(obj, 'soloActivos'),
+  )
   soloActivos?: boolean;
 }

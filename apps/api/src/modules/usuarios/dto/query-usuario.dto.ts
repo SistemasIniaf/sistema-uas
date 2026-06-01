@@ -1,18 +1,9 @@
-import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { Rol } from 'src/common/enums/rol.enum';
+import { transformBoolean } from 'src/common/helpers/transform-boolean.helper';
 
-/**
- * Query params para GET /usuarios (paginado).
- *
- * Ejemplo:
- *   GET /usuarios?page=1&limit=10&search=juan&rol=auditor&soloActivos=true
- *
- * - search      → busca en nombre y usuario (case-insensitive)
- * - rol         → filtra por rol exacto
- * - soloActivos → filtra solo los usuarios activos
- */
 export class QueryUsuarioDto extends PaginationDto {
   @IsOptional()
   @IsEnum(Rol, {
@@ -21,7 +12,8 @@ export class QueryUsuarioDto extends PaginationDto {
   rol?: Rol;
 
   @IsOptional()
-  @Transform(({ value }) => value === 'true' || value === true)
-  @IsBoolean()
+  @Transform(({ obj }: { obj: Record<string, unknown> }) =>
+    transformBoolean(obj, 'soloActivos'),
+  )
   soloActivos?: boolean;
 }

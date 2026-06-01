@@ -24,7 +24,7 @@ export class UnidadesService {
 
   async create(dto: CreateUnidadDto) {
     const existe = await this.prisma.unidad.findUnique({
-      where: { nombre: dto.nombre.toUpperCase() },
+      where: { nombre: dto.nombre },
     });
 
     if (existe) {
@@ -47,7 +47,7 @@ export class UnidadesService {
     const skip = (page - 1) * limit;
 
     const where = {
-      ...(soloActivos ? { activo: true } : {}),
+      ...(soloActivos !== undefined ? { activo: soloActivos } : {}),
       ...(search
         ? {
             OR: [
@@ -114,7 +114,7 @@ export class UnidadesService {
   }
 
   async update(id: number, dto: UpdateUnidadDto) {
-    await this.findOne(id); // valida existencia
+    await this.findOne(id);
 
     if (dto.nombre) {
       const duplicado = await this.prisma.unidad.findFirst({

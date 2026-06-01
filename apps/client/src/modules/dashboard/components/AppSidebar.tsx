@@ -13,14 +13,16 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { useUser } from "@/store/auth.store"
+import { useUser, useUserRol } from "@/store/auth.store"
 
-const navMain = [
+// Definición completa del nav con los roles permitidos por sección
+const allNavItems = [
   {
     title: "Administrar",
     url: "#",
     icon: <MonitorCog />,
     isActive: true,
+    allowedRoles: ["administrador"] as const,
     items: [
       { title: "Usuarios", url: "/usuarios" },
       { title: "Unidades", url: "/unidades" },
@@ -30,6 +32,12 @@ const navMain = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useUser()
+  const rol = useUserRol()
+
+  // Filtra los grupos de navegación según el rol del usuario
+  const navItems = allNavItems.filter(
+    (item) => rol && item.allowedRoles.includes(rol as never)
+  )
 
   return (
     <Sidebar variant="floating" collapsible="icon" {...props}>
@@ -52,7 +60,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={navMain} />
+        {navItems.length > 0 ? <NavMain items={navItems} /> : null}
       </SidebarContent>
 
       <SidebarFooter>

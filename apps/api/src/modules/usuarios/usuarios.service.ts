@@ -106,7 +106,7 @@ export class UsuariosService {
     const skip = (page - 1) * limit;
 
     const where = {
-      ...(soloActivos ? { activo: true } : {}),
+      ...(soloActivos !== undefined ? { activo: soloActivos } : {}),
       ...(rol ? { rol } : {}),
       ...(search
         ? {

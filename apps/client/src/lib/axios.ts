@@ -6,6 +6,18 @@ export const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  // Por defecto axios omite `false` en los query params.
+  // Este serializer lo incluye explícitamente para que el backend
+  // distinga entre "sin filtro" (undefined) e "inactivos" (false).
+  paramsSerializer: (params) => {
+    const searchParams = new URLSearchParams()
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== null) {
+        searchParams.set(key, String(value))
+      }
+    }
+    return searchParams.toString()
+  },
 })
 
 // ── Request interceptor ───────────────────────────────────────────────────────
