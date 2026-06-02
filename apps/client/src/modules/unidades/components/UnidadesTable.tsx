@@ -108,7 +108,9 @@ const PAGE_SIZE_OPTIONS = [5, 10, 20, 50]
 export function UnidadesTable() {
   // ── Estado local ──────────────────────────────────────────────────────────
   const [searchInput, setSearchInput] = useState("")
-  const [soloActivos, setSoloActivos] = useState<boolean | undefined>(undefined)
+  const [activoFiltro, setActivoFiltro] = useState<boolean | undefined>(
+    undefined
+  )
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -126,7 +128,7 @@ export function UnidadesTable() {
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     search: search || undefined,
-    soloActivos,
+    activo: activoFiltro,
   })
 
   // ── Tabla ─────────────────────────────────────────────────────────────────
@@ -143,14 +145,11 @@ export function UnidadesTable() {
 
   const meta = data?.meta
   const isEmpty = !isLoading && table.getRowModel().rows.length === 0
-
   const currentPage = pagination.pageIndex + 1
   const lastPage = meta?.lastPage ?? 1
 
   function getPageNumbers(): (number | "ellipsis")[] {
-    if (lastPage <= 5) {
-      return Array.from({ length: lastPage }, (_, i) => i + 1)
-    }
+    if (lastPage <= 5) return Array.from({ length: lastPage }, (_, i) => i + 1)
     const pages: (number | "ellipsis")[] = [1]
     if (currentPage > 3) pages.push("ellipsis")
     for (
@@ -199,14 +198,14 @@ export function UnidadesTable() {
         {/* Filtro de estado */}
         <Select
           value={
-            soloActivos === undefined
+            activoFiltro === undefined
               ? "todos"
-              : soloActivos
+              : activoFiltro
                 ? "activos"
                 : "inactivos"
           }
           onValueChange={(val) => {
-            setSoloActivos(val === "todos" ? undefined : val === "activos")
+            setActivoFiltro(val === "todos" ? undefined : val === "activos")
             resetPage()
           }}
         >
@@ -264,7 +263,7 @@ export function UnidadesTable() {
                   colSpan={columns.length}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  {search || soloActivos !== undefined
+                  {search || activoFiltro !== undefined
                     ? "No se encontraron resultados para los filtros aplicados."
                     : "No hay unidades registradas."}
                 </TableCell>
@@ -296,19 +295,16 @@ export function UnidadesTable() {
           <p className="shrink-0 text-sm text-muted-foreground">
             {meta.total === 0
               ? "Sin resultados"
-              : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(
-                  currentPage * pagination.pageSize,
-                  meta.total
-                )} de ${meta.total} unidade${meta.total !== 1 ? "s" : ""}`}
+              : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(currentPage * pagination.pageSize, meta.total)} de ${meta.total} unidade${meta.total !== 1 ? "s" : ""}`}
           </p>
 
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Por página</span>
             <Select
               value={String(pagination.pageSize)}
-              onValueChange={(val) => {
+              onValueChange={(val) =>
                 setPagination({ pageIndex: 0, pageSize: Number(val) })
-              }}
+              }
             >
               <SelectTrigger className="w-16">
                 <SelectValue />

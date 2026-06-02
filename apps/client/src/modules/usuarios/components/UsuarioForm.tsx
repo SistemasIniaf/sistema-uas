@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 import { Button } from "@/components/ui/button"
@@ -46,7 +46,7 @@ export function UsuarioCreateForm({ onClose }: Props) {
     },
   })
 
-  const rolActual = form.watch("rol")
+  const rolActual = useWatch({ control: form.control, name: "rol" })
   const esAdministrador = rolActual === "administrador"
 
   function onSubmit(data: CreateUsuarioFormInput) {

@@ -11,7 +11,7 @@ import type {
 export const usuarioService = {
   /**
    * Lista paginada con filtros — para DataTable.
-   * GET /usuarios?page=1&limit=10&search=...&rol=auditor&soloActivos=true
+   * GET /usuarios?page=1&limit=10&search=...&rol=auditor&activo=true
    */
   findAll: async (
     params: UsuariosQueryParams
@@ -24,14 +24,11 @@ export const usuarioService = {
 
   /**
    * Lista completa sin paginar — para <Select> y <Combobox>.
-   * GET /usuarios/all?soloActivos=true&rol=aprobador
+   * GET /usuarios/all?activo=true&rol=aprobador
    */
-  findAllNoPaginated: async (
-    soloActivos = true,
-    rol?: Rol
-  ): Promise<Usuario[]> => {
+  findAllNoPaginated: async (activo = true, rol?: Rol): Promise<Usuario[]> => {
     const { data } = await api.get<Usuario[]>("/usuarios/all", {
-      params: { soloActivos, rol },
+      params: { activo, rol },
     })
     return data
   },

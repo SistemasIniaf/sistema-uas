@@ -9,8 +9,8 @@ export const usuariosKeys = {
   lists: () => [...usuariosKeys.all, "list"] as const,
   list: (params: UsuariosQueryParams) =>
     [...usuariosKeys.lists(), params] as const,
-  allNoPaginated: (soloActivos?: boolean, rol?: Rol) =>
-    [...usuariosKeys.all, "all", { soloActivos, rol }] as const,
+  allNoPaginated: (activo?: boolean, rol?: Rol) =>
+    [...usuariosKeys.all, "all", { activo, rol }] as const,
   detail: (id: number) => [...usuariosKeys.all, id] as const,
 }
 
@@ -33,10 +33,10 @@ export function useUsuarios(params: UsuariosQueryParams) {
  * Por defecto solo trae los activos.
  * Se puede filtrar por rol (ej: solo aprobadores).
  */
-export function useUsuariosAll(soloActivos = true, rol?: Rol) {
+export function useUsuariosAll(activo = true, rol?: Rol) {
   return useQuery({
-    queryKey: usuariosKeys.allNoPaginated(soloActivos, rol),
-    queryFn: () => usuarioService.findAllNoPaginated(soloActivos, rol),
+    queryKey: usuariosKeys.allNoPaginated(activo, rol),
+    queryFn: () => usuarioService.findAllNoPaginated(activo, rol),
     staleTime: 1000 * 60 * 10,
   })
 }

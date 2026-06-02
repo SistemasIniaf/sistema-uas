@@ -33,7 +33,7 @@ export class UsuariosController {
     return this.usuariosService.create(dto);
   }
 
-  // Solo administrador puede listar todos los usuarios. ?soloActivos=true → filtra solo los activos.
+  // Solo administrador puede listar todos los usuarios. ?activo=true → filtra solo los activos.
   @Get()
   @Roles(Rol.ADMINISTRADOR)
   findAll(@Query() query: QueryUsuarioDto) {
@@ -43,10 +43,10 @@ export class UsuariosController {
   @Get('all')
   @Roles(Rol.ADMINISTRADOR)
   findAllNoPaginated(
-    @Query('soloActivos') soloActivos?: string,
+    @Query('activo') activo?: string,
     @Query('rol') rol?: Rol,
   ) {
-    const activos = soloActivos === undefined ? true : soloActivos === 'true';
+    const activos = activo === undefined ? true : activo === 'true';
     return this.usuariosService.findAllNoPaginated(activos, rol);
   }
 

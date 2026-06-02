@@ -9,8 +9,8 @@ export const unidadesKeys = {
   lists: () => [...unidadesKeys.all, "list"] as const,
   list: (params: UnidadesQueryParams) =>
     [...unidadesKeys.lists(), params] as const,
-  allNoPaginated: (soloActivos?: boolean) =>
-    [...unidadesKeys.all, "all", { soloActivos }] as const,
+  allNoPaginated: (activo?: boolean) =>
+    [...unidadesKeys.all, "all", { activo }] as const,
   detail: (id: number) => [...unidadesKeys.all, id] as const,
 }
 
@@ -30,13 +30,13 @@ export function useUnidades(params: UnidadesQueryParams) {
 
 /**
  * Lista completa sin paginar — para selects y dropdowns.
- * Por defecto solo trae las activas.
+ * Por defecto solo trae las activas (activo=true).
  */
-export function useUnidadesAll(soloActivos = true) {
+export function useUnidadesAll(activo = true) {
   return useQuery({
-    queryKey: unidadesKeys.allNoPaginated(soloActivos),
-    queryFn: () => unidadService.findAllNoPaginated(soloActivos),
-    staleTime: 1000 * 60 * 10, // 10 min — cambia poco
+    queryKey: unidadesKeys.allNoPaginated(activo),
+    queryFn: () => unidadService.findAllNoPaginated(activo),
+    staleTime: 1000 * 60 * 10,
   })
 }
 

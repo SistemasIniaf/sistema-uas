@@ -30,7 +30,7 @@ export class UnidadesController {
     return this.unidadesService.create(dto);
   }
 
-  // -Todos los roles autenticados pueden listar unidades. ?soloActivos=true → filtra solo las activas.
+  // -Todos los roles autenticados pueden listar unidades. ?activo=true → filtra solo las activas.
   @Get()
   findAll(@Query() query: QueryUnidadDto) {
     return this.unidadesService.findAll(query);
@@ -38,8 +38,8 @@ export class UnidadesController {
 
   // Lista completa sin paginar
   @Get('all')
-  findAllNoPaginated(@Query('soloActivos') soloActivos?: string) {
-    const activos = soloActivos === undefined ? true : soloActivos === 'true';
+  findAllNoPaginated(@Query('activo') activo?: string) {
+    const activos = activo === undefined ? true : activo === 'true';
     return this.unidadesService.findAllNoPaginated(activos);
   }
 

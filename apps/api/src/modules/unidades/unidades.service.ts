@@ -43,11 +43,11 @@ export class UnidadesService {
   }
 
   async findAll(query: QueryUnidadDto) {
-    const { page = 1, limit = 10, search, soloActivos } = query;
+    const { page = 1, limit = 10, search, activo } = query;
     const skip = (page - 1) * limit;
 
     const where = {
-      ...(soloActivos !== undefined ? { activo: soloActivos } : {}),
+      ...(activo !== undefined ? { activo } : {}),
       ...(search
         ? {
             OR: [
@@ -77,9 +77,9 @@ export class UnidadesService {
     return paginate(data, total, page, limit);
   }
 
-  findAllNoPaginated(soloActivos = true) {
+  findAllNoPaginated(activos = true) {
     return this.prisma.unidad.findMany({
-      where: soloActivos ? { activo: true } : undefined,
+      where: activos ? { activo: true } : undefined,
       orderBy: { nombre: 'asc' },
       select: {
         id: true,

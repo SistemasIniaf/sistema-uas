@@ -13,7 +13,7 @@ export class QueryUsuarioDto extends PaginationDto {
 
   @IsOptional()
   @Transform(({ obj }: { obj: Record<string, unknown> }) =>
-    transformBoolean(obj, 'soloActivos'),
+    transformBoolean(obj, 'activo'),
   )
-  soloActivos?: boolean;
+  activo?: boolean;
 }

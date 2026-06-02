@@ -11,7 +11,7 @@ import type {
 export const unidadService = {
   /**
    * Lista paginada con filtros — para DataTable.
-   * GET /unidades?page=1&limit=10&search=...&soloActivos=true
+   * GET /unidades?page=1&limit=10&search=...&activo=true
    */
   findAll: async (
     params: UnidadesQueryParams
@@ -24,11 +24,11 @@ export const unidadService = {
 
   /**
    * Lista completa sin paginar — para <Select> y <Combobox>.
-   * GET /unidades/all?soloActivos=true
+   * GET /unidades/all?activo=true
    */
-  findAllNoPaginated: async (soloActivos = true): Promise<Unidad[]> => {
+  findAllNoPaginated: async (activo = true): Promise<Unidad[]> => {
     const { data } = await api.get<Unidad[]>("/unidades/all", {
-      params: { soloActivos },
+      params: { activo },
     })
     return data
   },

@@ -6,7 +6,7 @@ import { transformBoolean } from 'src/common/helpers/transform-boolean.helper';
 export class QueryUnidadDto extends PaginationDto {
   @IsOptional()
   @Transform(({ obj }: { obj: Record<string, unknown> }) =>
-    transformBoolean(obj, 'soloActivos'),
+    transformBoolean(obj, 'activo'),
   )
-  soloActivos?: boolean;
+  activo?: boolean;
 }

@@ -38,7 +38,7 @@ export interface UnidadesQueryParams {
   page?: number
   limit?: number
   search?: string
-  soloActivos?: boolean
+  activo?: boolean
 }
 
 // ── Payloads ──────────────────────────────────────────────────────────────────

@@ -17,7 +17,6 @@ import { paginate } from 'src/common/helpers/paginate.helper';
 
 const SALT_ROUNDS = 10;
 
-/** Campos seguros para devolver al cliente (sin password) */
 const safeSelect = {
   id: true,
   nombre: true,
@@ -47,7 +46,6 @@ export class UsuariosService {
       return;
     }
 
-    // Todos los demás roles requieren unidad
     if (!unidadId) {
       throw new BadRequestException(
         `El rol "${rol}" requiere tener una unidad asignada`,
@@ -102,11 +100,11 @@ export class UsuariosService {
   }
 
   async findAll(query: QueryUsuarioDto) {
-    const { page = 1, limit = 10, search, rol, soloActivos } = query;
+    const { page = 1, limit = 10, search, rol, activo } = query;
     const skip = (page - 1) * limit;
 
     const where = {
-      ...(soloActivos !== undefined ? { activo: soloActivos } : {}),
+      ...(activo !== undefined ? { activo } : {}),
       ...(rol ? { rol } : {}),
       ...(search
         ? {
@@ -132,10 +130,10 @@ export class UsuariosService {
     return paginate(data, total, page, limit);
   }
 
-  findAllNoPaginated(soloActivos = true, rol?: Rol) {
+  findAllNoPaginated(activo = true, rol?: Rol) {
     return this.prisma.usuario.findMany({
       where: {
-        ...(soloActivos ? { activo: true } : {}),
+        ...(activo ? { activo: true } : {}),
         ...(rol ? { rol } : {}),
       },
       orderBy: { nombre: 'asc' },

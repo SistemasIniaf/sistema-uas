@@ -54,7 +54,7 @@ export interface UsuariosQueryParams {
   limit?: number
   search?: string
   rol?: Rol
-  soloActivos?: boolean
+  activo?: boolean
 }
 
 // ── Payloads ──────────────────────────────────────────────────────────────────

@@ -91,10 +91,11 @@ const columns: ColumnDef<Usuario>[] = [
     header: "Unidad",
     cell: ({ row }) => {
       const unidad = row.original.unidad
-      if (!unidad) {
-        return <span className="text-xs text-muted-foreground">—</span>
-      }
-      return <span className="text-sm">{unidad.nombre}</span>
+      return unidad ? (
+        <span className="text-sm">{unidad.nombre}</span>
+      ) : (
+        <span className="text-xs text-muted-foreground">—</span>
+      )
     },
   },
   {
@@ -134,7 +135,9 @@ export function UsuariosTable() {
   // ── Estado local ──────────────────────────────────────────────────────────
   const [searchInput, setSearchInput] = useState("")
   const [rolFiltro, setRolFiltro] = useState<Rol | undefined>(undefined)
-  const [soloActivos, setSoloActivos] = useState<boolean | undefined>(undefined)
+  const [activoFiltro, setActivoFiltro] = useState<boolean | undefined>(
+    undefined
+  )
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -153,7 +156,7 @@ export function UsuariosTable() {
     limit: pagination.pageSize,
     search: search || undefined,
     rol: rolFiltro,
-    soloActivos,
+    activo: activoFiltro,
   })
 
   // ── Tabla ─────────────────────────────────────────────────────────────────
@@ -174,9 +177,7 @@ export function UsuariosTable() {
   const lastPage = meta?.lastPage ?? 1
 
   function getPageNumbers(): (number | "ellipsis")[] {
-    if (lastPage <= 5) {
-      return Array.from({ length: lastPage }, (_, i) => i + 1)
-    }
+    if (lastPage <= 5) return Array.from({ length: lastPage }, (_, i) => i + 1)
     const pages: (number | "ellipsis")[] = [1]
     if (currentPage > 3) pages.push("ellipsis")
     for (
@@ -192,7 +193,7 @@ export function UsuariosTable() {
   }
 
   const hayFiltrosActivos =
-    !!search || rolFiltro !== undefined || soloActivos !== undefined
+    !!search || rolFiltro !== undefined || activoFiltro !== undefined
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -249,14 +250,14 @@ export function UsuariosTable() {
         {/* Filtro de estado */}
         <Select
           value={
-            soloActivos === undefined
+            activoFiltro === undefined
               ? "todos"
-              : soloActivos
+              : activoFiltro
                 ? "activos"
                 : "inactivos"
           }
           onValueChange={(val) => {
-            setSoloActivos(val === "todos" ? undefined : val === "activos")
+            setActivoFiltro(val === "todos" ? undefined : val === "activos")
             resetPage()
           }}
         >
@@ -346,10 +347,7 @@ export function UsuariosTable() {
           <p className="shrink-0 text-sm text-muted-foreground">
             {meta.total === 0
               ? "Sin resultados"
-              : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(
-                  currentPage * pagination.pageSize,
-                  meta.total
-                )} de ${meta.total} usuario${meta.total !== 1 ? "s" : ""}`}
+              : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(currentPage * pagination.pageSize, meta.total)} de ${meta.total} usuario${meta.total !== 1 ? "s" : ""}`}
           </p>
 
           <div className="flex items-center gap-2">
