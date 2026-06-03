@@ -2,7 +2,6 @@ import * as React from "react"
 import { Package, MonitorCog } from "lucide-react"
 
 import { NavMain } from "./NavMain"
-import { NavUser } from "./NavUser"
 import {
   Sidebar,
   SidebarContent,
@@ -13,9 +12,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { useUser, useUserRol } from "@/store/auth.store"
+import { useUserRol } from "@/store/auth.store"
 
-// Definición completa del nav con los roles permitidos por sección
 const allNavItems = [
   {
     title: "Administrar",
@@ -31,10 +29,8 @@ const allNavItems = [
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = useUser()
   const rol = useUserRol()
 
-  // Filtra los grupos de navegación según el rol del usuario
   const navItems = allNavItems.filter(
     (item) => rol && item.allowedRoles.includes(rol as never)
   )
@@ -63,15 +59,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {navItems.length > 0 ? <NavMain items={navItems} /> : null}
       </SidebarContent>
 
-      <SidebarFooter>
-        <NavUser
-          user={{
-            name: user?.nombre ?? "",
-            rol: user?.rol ?? "",
-            avatar: "",
-          }}
-        />
-      </SidebarFooter>
+      <SidebarFooter />
+
       <SidebarRail />
     </Sidebar>
   )
