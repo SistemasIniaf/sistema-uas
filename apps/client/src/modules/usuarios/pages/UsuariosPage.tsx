@@ -16,7 +16,9 @@ export const UsuariosPage = () => {
         <UsuarioCreateDialog />
       </div>
 
-      <UsuariosTable />
+      <div className="rounded-xl border bg-card p-4 shadow-sm">
+        <UsuariosTable />
+      </div>
     </div>
   )
 }

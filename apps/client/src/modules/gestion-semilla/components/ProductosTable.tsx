@@ -37,33 +37,20 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { UnidadActions } from "./UnidadActions"
-import { useUnidades } from "../hooks/useUnidades"
-import type { Unidad } from "../types/unidad.types"
+import { ProductoActions } from "./GestionSemillaActions"
+import { ProductoCreateDialog } from "./ProductoDialog"
+import { useProductos } from "../hooks/useGestionSemilla"
+import type { Producto } from "../types/gestion-semilla.types"
 
-// ── Columnas ──────────────────────────────────────────────────────────────────
+const PAGE_SIZE_OPTIONS = [5, 10, 20, 50]
 
-const columns: ColumnDef<Unidad>[] = [
+const columns: ColumnDef<Producto>[] = [
   {
     accessorKey: "nombre",
     header: "Nombre",
     cell: ({ row }) => (
       <span className="font-medium">{row.getValue("nombre")}</span>
     ),
-  },
-  {
-    accessorKey: "descripcion",
-    header: "Descripción",
-    cell: ({ row }) => {
-      const desc = row.getValue("descripcion") as string | null
-      return desc ? (
-        <span className="max-w-xs truncate text-sm text-muted-foreground">
-          {desc}
-        </span>
-      ) : (
-        <span className="text-xs text-muted-foreground/50">—</span>
-      )
-    },
   },
   {
     accessorKey: "activo",
@@ -74,64 +61,46 @@ const columns: ColumnDef<Unidad>[] = [
           variant="outline"
           className="border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400"
         >
-          Activa
+          Activo
         </Badge>
       ) : (
         <Badge
           variant="outline"
           className="border-muted-foreground/30 bg-muted/30 text-muted-foreground"
         >
-          Inactiva
+          Inactivo
         </Badge>
       ),
   },
   {
-    id: "_count.usuarios",
-    header: "Usuarios",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        {row.original._count.usuarios}
-      </span>
-    ),
-  },
-  {
     id: "actions",
     header: "",
-    cell: ({ row }) => <UnidadActions unidad={row.original} />,
+    cell: ({ row }) => <ProductoActions producto={row.original} />,
   },
 ]
 
-// ── Componente principal ──────────────────────────────────────────────────────
-
-const PAGE_SIZE_OPTIONS = [5, 10, 20, 50]
-
-export function UnidadesTable() {
-  // ── Estado local ──────────────────────────────────────────────────────────
+export function ProductosTable() {
   const [searchInput, setSearchInput] = useState("")
   const [activoFiltro, setActivoFiltro] = useState<boolean | undefined>(
     undefined
   )
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 5,
   })
-
   const search = useDebounce(searchInput, 400)
-
   const resetPage = useCallback(
     () => setPagination((p) => ({ ...p, pageIndex: 0 })),
     []
   )
 
-  // ── Query ─────────────────────────────────────────────────────────────────
-  const { data, isLoading, isFetching } = useUnidades({
+  const { data, isLoading, isFetching } = useProductos({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     search: search || undefined,
     activo: activoFiltro,
   })
 
-  // ── Tabla ─────────────────────────────────────────────────────────────────
   const table = useReactTable({
     data: data?.data ?? [],
     columns,
@@ -164,16 +133,14 @@ export function UnidadesTable() {
     return pages
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2">
-        {/* Buscador */}
-        <div className="relative max-w-sm min-w-48 flex-1">
+        <div className="relative min-w-40 flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Buscar por nombre o descripción..."
+            placeholder="Buscar semillas..."
             value={searchInput}
             onChange={(e) => {
               setSearchInput(e.target.value)
@@ -195,7 +162,6 @@ export function UnidadesTable() {
           )}
         </div>
 
-        {/* Filtro de estado */}
         <Select
           value={
             activoFiltro === undefined
@@ -209,15 +175,17 @@ export function UnidadesTable() {
             resetPage()
           }}
         >
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos</SelectItem>
-            <SelectItem value="activos">Solo activas</SelectItem>
-            <SelectItem value="inactivos">Solo inactivas</SelectItem>
+            <SelectItem value="activos">Solo activos</SelectItem>
+            <SelectItem value="inactivos">Solo inactivos</SelectItem>
           </SelectContent>
         </Select>
+
+        <ProductoCreateDialog />
 
         {isFetching && !isLoading && (
           <span className="ml-auto animate-pulse text-xs text-muted-foreground">
@@ -245,7 +213,6 @@ export function UnidadesTable() {
               </TableRow>
             ))}
           </TableHeader>
-
           <TableBody>
             {isLoading ? (
               Array.from({ length: pagination.pageSize }).map((_, i) => (
@@ -261,11 +228,11 @@ export function UnidadesTable() {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
+                  className="h-20 text-center text-muted-foreground"
                 >
                   {search || activoFiltro !== undefined
-                    ? "No se encontraron resultados para los filtros aplicados."
-                    : "No hay unidades registradas."}
+                    ? "No se encontraron resultados."
+                    : "No hay semillas registradas."}
                 </TableCell>
               </TableRow>
             ) : (
@@ -291,12 +258,12 @@ export function UnidadesTable() {
 
       {/* Footer */}
       {meta && (
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-4">
-            <p className="shrink-0 text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {meta.total === 0
                 ? "Sin resultados"
-                : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(currentPage * pagination.pageSize, meta.total)} de ${meta.total} unidade${meta.total !== 1 ? "s" : ""}`}
+                : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(currentPage * pagination.pageSize, meta.total)} de ${meta.total}`}
             </p>
 
             <div className="flex items-center gap-2">
@@ -310,14 +277,14 @@ export function UnidadesTable() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PAGE_SIZE_OPTIONS.map((size) => (
-                    <SelectItem key={size} value={String(size)}>
-                      {size}
+                  {PAGE_SIZE_OPTIONS.map((s) => (
+                    <SelectItem key={s} value={String(s)}>
+                      {s}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <span className="text-sm text-muted-foreground">Por página</span>
+              <span className="text-xs text-muted-foreground">por página</span>
             </div>
           </div>
 
@@ -340,10 +307,9 @@ export function UnidadesTable() {
                     }
                   />
                 </PaginationItem>
-
                 {getPageNumbers().map((page, idx) =>
                   page === "ellipsis" ? (
-                    <PaginationItem key={`ellipsis-${idx}`}>
+                    <PaginationItem key={`e-${idx}`}>
                       <PaginationEllipsis />
                     </PaginationItem>
                   ) : (
@@ -363,7 +329,6 @@ export function UnidadesTable() {
                     </PaginationItem>
                   )
                 )}
-
                 <PaginationItem>
                   <PaginationNext
                     onClick={() =>

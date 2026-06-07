@@ -12,16 +12,14 @@ import {
 const labels: Record<string, string> = {
   usuarios: "Usuarios",
   unidades: "Unidades",
+  "gestion-semilla": "Gestión de Semilla",
   almacenes: "Almacenes",
   direcciones: "Direcciones",
 }
 
 export function DynamicBreadcrumb() {
   const location = useLocation()
-
-  const pathname = location.pathname
-
-  const segments = pathname.split("/").filter(Boolean)
+  const segments = location.pathname.split("/").filter(Boolean)
 
   return (
     <Breadcrumb>
@@ -40,7 +38,6 @@ export function DynamicBreadcrumb() {
           return (
             <span key={href} className="contents">
               <BreadcrumbSeparator />
-
               <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage>{label}</BreadcrumbPage>

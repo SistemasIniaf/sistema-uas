@@ -17,6 +17,7 @@ interface FormInputProps<T extends FieldValues> {
   readOnly?: boolean
   description?: string
   required?: boolean
+  upperCase?: boolean
 }
 
 export function FormInput<T extends FieldValues>({
@@ -31,6 +32,7 @@ export function FormInput<T extends FieldValues>({
   readOnly = false,
   description,
   required = true,
+  upperCase = false,
 }: FormInputProps<T>) {
   const fieldId = id || `field-${name}`
 
@@ -57,6 +59,11 @@ export function FormInput<T extends FieldValues>({
             disabled={disabled}
             readOnly={readOnly}
             value={field.value ?? ""}
+            onChange={(e) =>
+              field.onChange(
+                upperCase ? e.target.value.toUpperCase() : e.target.value
+              )
+            }
           />
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>

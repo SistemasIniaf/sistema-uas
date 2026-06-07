@@ -344,31 +344,33 @@ export function UsuariosTable() {
       {/* Footer */}
       {meta && (
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <p className="shrink-0 text-sm text-muted-foreground">
-            {meta.total === 0
-              ? "Sin resultados"
-              : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(currentPage * pagination.pageSize, meta.total)} de ${meta.total} usuario${meta.total !== 1 ? "s" : ""}`}
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="shrink-0 text-sm text-muted-foreground">
+              {meta.total === 0
+                ? "Sin resultados"
+                : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(currentPage * pagination.pageSize, meta.total)} de ${meta.total} usuario${meta.total !== 1 ? "s" : ""}`}
+            </p>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Por página</span>
-            <Select
-              value={String(pagination.pageSize)}
-              onValueChange={(val) =>
-                setPagination({ pageIndex: 0, pageSize: Number(val) })
-              }
-            >
-              <SelectTrigger className="w-16">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PAGE_SIZE_OPTIONS.map((size) => (
-                  <SelectItem key={size} value={String(size)}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select
+                value={String(pagination.pageSize)}
+                onValueChange={(val) =>
+                  setPagination({ pageIndex: 0, pageSize: Number(val) })
+                }
+              >
+                <SelectTrigger className="w-16">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_SIZE_OPTIONS.map((size) => (
+                    <SelectItem key={size} value={String(size)}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-sm text-muted-foreground">Por página</span>
+            </div>
           </div>
 
           {lastPage > 1 && (

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Package, MonitorCog } from "lucide-react"
+import { Package, MonitorCog, Sprout } from "lucide-react"
 
 import { NavMain } from "./NavMain"
 import {
@@ -16,7 +16,7 @@ import { useUserRol } from "@/store/auth.store"
 
 const allNavItems = [
   {
-    title: "Administrar",
+    title: "Administración",
     url: "#",
     icon: <MonitorCog />,
     isActive: true,
@@ -25,6 +25,19 @@ const allNavItems = [
       { title: "Usuarios", url: "/usuarios" },
       { title: "Unidades", url: "/unidades" },
     ],
+  },
+  {
+    title: "Operaciones",
+    url: "#",
+    icon: <Sprout />,
+    isActive: true,
+    allowedRoles: [
+      "administrador",
+      "responsable",
+      "operador",
+      "auditor",
+    ] as const,
+    items: [{ title: "Gestión de semilla", url: "/gestion-semilla" }],
   },
 ]
 
@@ -60,7 +73,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter />
-
       <SidebarRail />
     </Sidebar>
   )

@@ -9,6 +9,9 @@ import { UsuariosModule } from './modules/usuarios/usuarios.module';
 
 import { RolesGuard } from './common/guards/roles.guard';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { ProductosModule } from './modules/productos/productos.module';
+import { VariedadesModule } from './modules/variedades/variedades.module';
+import { CategoriasModule } from './modules/categorias/categorias.module';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     AuthModule,
     UnidadesModule,
     UsuariosModule,
+    ProductosModule,
+    VariedadesModule,
+    CategoriasModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

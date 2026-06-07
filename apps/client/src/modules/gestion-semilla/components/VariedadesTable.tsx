@@ -37,33 +37,26 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { UnidadActions } from "./UnidadActions"
-import { useUnidades } from "../hooks/useUnidades"
-import type { Unidad } from "../types/unidad.types"
+import { VariedadActions } from "./GestionSemillaActions"
+import { VariedadCreateDialog } from "./VariedadDialog"
+import { useVariedades } from "../hooks/useGestionSemilla"
+import { useProductosAll } from "../hooks/useGestionSemilla"
+import type { Variedad } from "../types/gestion-semilla.types"
 
-// ── Columnas ──────────────────────────────────────────────────────────────────
+const PAGE_SIZE_OPTIONS = [5, 10, 20, 50]
 
-const columns: ColumnDef<Unidad>[] = [
+const columns: ColumnDef<Variedad>[] = [
   {
-    accessorKey: "nombre",
-    header: "Nombre",
+    accessorKey: "producto",
+    header: "Semilla",
     cell: ({ row }) => (
-      <span className="font-medium">{row.getValue("nombre")}</span>
+      <span className="font-medium">{row.original.producto.nombre}</span>
     ),
   },
   {
-    accessorKey: "descripcion",
-    header: "Descripción",
-    cell: ({ row }) => {
-      const desc = row.getValue("descripcion") as string | null
-      return desc ? (
-        <span className="max-w-xs truncate text-sm text-muted-foreground">
-          {desc}
-        </span>
-      ) : (
-        <span className="text-xs text-muted-foreground/50">—</span>
-      )
-    },
+    accessorKey: "nombre",
+    header: "Variedad",
+    cell: ({ row }) => <span>{row.getValue("nombre")}</span>,
   },
   {
     accessorKey: "activo",
@@ -86,52 +79,36 @@ const columns: ColumnDef<Unidad>[] = [
       ),
   },
   {
-    id: "_count.usuarios",
-    header: "Usuarios",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        {row.original._count.usuarios}
-      </span>
-    ),
-  },
-  {
     id: "actions",
     header: "",
-    cell: ({ row }) => <UnidadActions unidad={row.original} />,
+    cell: ({ row }) => <VariedadActions variedad={row.original} />,
   },
 ]
 
-// ── Componente principal ──────────────────────────────────────────────────────
-
-const PAGE_SIZE_OPTIONS = [5, 10, 20, 50]
-
-export function UnidadesTable() {
-  // ── Estado local ──────────────────────────────────────────────────────────
+export function VariedadesTable() {
   const [searchInput, setSearchInput] = useState("")
-  const [activoFiltro, setActivoFiltro] = useState<boolean | undefined>(
+  const [productoFiltro, setProductoFiltro] = useState<number | undefined>(
     undefined
   )
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 5,
   })
-
   const search = useDebounce(searchInput, 400)
-
   const resetPage = useCallback(
     () => setPagination((p) => ({ ...p, pageIndex: 0 })),
     []
   )
 
-  // ── Query ─────────────────────────────────────────────────────────────────
-  const { data, isLoading, isFetching } = useUnidades({
+  const { data: productos = [] } = useProductosAll(false)
+
+  const { data, isLoading, isFetching } = useVariedades({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     search: search || undefined,
-    activo: activoFiltro,
+    productoId: productoFiltro,
   })
 
-  // ── Tabla ─────────────────────────────────────────────────────────────────
   const table = useReactTable({
     data: data?.data ?? [],
     columns,
@@ -164,16 +141,14 @@ export function UnidadesTable() {
     return pages
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2">
-        {/* Buscador */}
-        <div className="relative max-w-sm min-w-48 flex-1">
+        <div className="relative min-w-40 flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Buscar por nombre o descripción..."
+            placeholder="Buscar variedades..."
             value={searchInput}
             onChange={(e) => {
               setSearchInput(e.target.value)
@@ -195,29 +170,27 @@ export function UnidadesTable() {
           )}
         </div>
 
-        {/* Filtro de estado */}
         <Select
-          value={
-            activoFiltro === undefined
-              ? "todos"
-              : activoFiltro
-                ? "activos"
-                : "inactivos"
-          }
+          value={productoFiltro ? String(productoFiltro) : "todos"}
           onValueChange={(val) => {
-            setActivoFiltro(val === "todos" ? undefined : val === "activos")
+            setProductoFiltro(val === "todos" ? undefined : Number(val))
             resetPage()
           }}
         >
-          <SelectTrigger className="w-36">
-            <SelectValue />
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Todas las semillas" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="todos">Todos</SelectItem>
-            <SelectItem value="activos">Solo activas</SelectItem>
-            <SelectItem value="inactivos">Solo inactivas</SelectItem>
+            <SelectItem value="todos">Todas las semillas</SelectItem>
+            {productos.map((p) => (
+              <SelectItem key={p.id} value={String(p.id)}>
+                {p.nombre}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
+
+        <VariedadCreateDialog />
 
         {isFetching && !isLoading && (
           <span className="ml-auto animate-pulse text-xs text-muted-foreground">
@@ -245,7 +218,6 @@ export function UnidadesTable() {
               </TableRow>
             ))}
           </TableHeader>
-
           <TableBody>
             {isLoading ? (
               Array.from({ length: pagination.pageSize }).map((_, i) => (
@@ -261,11 +233,11 @@ export function UnidadesTable() {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
+                  className="h-20 text-center text-muted-foreground"
                 >
-                  {search || activoFiltro !== undefined
-                    ? "No se encontraron resultados para los filtros aplicados."
-                    : "No hay unidades registradas."}
+                  {search || productoFiltro
+                    ? "No se encontraron resultados."
+                    : "No hay variedades registradas."}
                 </TableCell>
               </TableRow>
             ) : (
@@ -291,12 +263,12 @@ export function UnidadesTable() {
 
       {/* Footer */}
       {meta && (
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-4">
-            <p className="shrink-0 text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {meta.total === 0
                 ? "Sin resultados"
-                : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(currentPage * pagination.pageSize, meta.total)} de ${meta.total} unidade${meta.total !== 1 ? "s" : ""}`}
+                : `${(currentPage - 1) * pagination.pageSize + 1}–${Math.min(currentPage * pagination.pageSize, meta.total)} de ${meta.total}`}
             </p>
 
             <div className="flex items-center gap-2">
@@ -310,14 +282,14 @@ export function UnidadesTable() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PAGE_SIZE_OPTIONS.map((size) => (
-                    <SelectItem key={size} value={String(size)}>
-                      {size}
+                  {PAGE_SIZE_OPTIONS.map((s) => (
+                    <SelectItem key={s} value={String(s)}>
+                      {s}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <span className="text-sm text-muted-foreground">Por página</span>
+              <span className="text-xs text-muted-foreground">por página</span>
             </div>
           </div>
 
@@ -340,10 +312,9 @@ export function UnidadesTable() {
                     }
                   />
                 </PaginationItem>
-
                 {getPageNumbers().map((page, idx) =>
                   page === "ellipsis" ? (
-                    <PaginationItem key={`ellipsis-${idx}`}>
+                    <PaginationItem key={`e-${idx}`}>
                       <PaginationEllipsis />
                     </PaginationItem>
                   ) : (
@@ -363,7 +334,6 @@ export function UnidadesTable() {
                     </PaginationItem>
                   )
                 )}
-
                 <PaginationItem>
                   <PaginationNext
                     onClick={() =>

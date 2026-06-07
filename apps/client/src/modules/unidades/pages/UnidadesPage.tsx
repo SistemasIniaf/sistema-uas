@@ -17,8 +17,9 @@ export default function UnidadesPage() {
         <UnidadCreateDialog />
       </div>
 
-      {/* Tabla con paginación y búsqueda */}
-      <UnidadesTable />
+      <div className="rounded-xl border bg-card p-4 shadow-sm">
+        <UnidadesTable />
+      </div>
     </div>
   )
 }

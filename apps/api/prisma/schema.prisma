@@ -48,3 +48,40 @@ model Usuario {
 
   @@map("usuario")
 }
+
+model Producto {
+  id         Int        @id @default(autoincrement())
+  nombre     String     @unique
+  activo     Boolean    @default(true)
+  variedades Variedad[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("productos")
+}
+
+model Variedad {
+  id         Int      @id @default(autoincrement())
+  nombre     String
+  activo     Boolean  @default(true)
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productoId, nombre])
+  @@map("variedades")
+}
+
+model Categoria {
+  id     Int     @id @default(autoincrement())
+  nombre String  @unique
+  activo Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categorias")
+}
