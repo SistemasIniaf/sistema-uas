@@ -12,6 +12,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { ProductosModule } from './modules/productos/productos.module';
 import { VariedadesModule } from './modules/variedades/variedades.module';
 import { CategoriasModule } from './modules/categorias/categorias.module';
+import { SemillerasModule } from './modules/semilleras/semilleras.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CategoriasModule } from './modules/categorias/categorias.module';
     ProductosModule,
     VariedadesModule,
     CategoriasModule,
+    SemillerasModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

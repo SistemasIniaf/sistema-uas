@@ -27,8 +27,9 @@ model Unidad {
   activo      Boolean   @default(true)
   usuarios    Usuario[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  semilleras Semillera[]
 
   @@map("unidad")
 }
@@ -84,4 +85,19 @@ model Categoria {
   updatedAt DateTime @updatedAt
 
   @@map("categorias")
+}
+
+model Semillera {
+  id        Int     @id @default(autoincrement())
+  nombre    String
+  telefono  String
+  direccion String?
+  activo    Boolean @default(true)
+  unidadId  Int
+  unidad    Unidad  @relation(fields: [unidadId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("semilleras")
 }
